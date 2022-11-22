@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require("uuid");
+
 Parse.Cloud.define("register", async (req) => {
   const { name, email, passwordOne, passwordTwo, termsAccepted } = req.params;
 
@@ -20,6 +22,8 @@ Parse.Cloud.define("register", async (req) => {
   user.set("email", email);
   user.set("password", passwordOne);
   user.set("passwordLength", passwordOne.length);
+  user.set("customerId", uuidv4());
+  user.set("customerTier", 0);
 
   try {
     if (!termsAccepted) {

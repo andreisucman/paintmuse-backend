@@ -1,7 +1,8 @@
 const Parse = require("parse/node");
 
 async function checkIfPrivate(customerId) {
-  const query = new Parse.Query("Customers");
+  const User = Parse.Object.extend(Parse.User);
+  const query = new Parse.Query(User);
   query.equalTo("customerId", customerId);
   const result = await query.first();
 

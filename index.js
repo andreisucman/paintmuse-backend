@@ -1,14 +1,14 @@
 const express = require("express");
 const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
-const cors = require("cors");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 require("dotenv").config();
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 
 const api = new ParseServer({
   /* General */
-  databaseURI: process.env.MONGODB_URI,
+  databaseURI: process.env.POSTGRESQL_URI,
   cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
   serverURL: process.env.SERVER_URL || "http://localhost:3001/parse",
 
