@@ -90,7 +90,7 @@ app.post("/requestImages", cors(), async (req, res) => {
       query: req.body.query,
     };
     const reply = await requestImages(requestData);
-    return res.json("request data is", requestData);
+    return res.json(reply.data);
   } catch (err) {
     console.log(err);
     res.status(404).send(err);
@@ -107,7 +107,6 @@ app.post("/requestEdit", cors(), async (req, res) => {
       customerId: req.body.customerId,
     };
     const reply = await requestEdit(data);
-    console.log(reply.data);
     return res.json(reply.data);
   } catch (err) {
     console.log(err);
@@ -122,7 +121,6 @@ app.post("/requestVariation", cors(), async (req, res) => {
       count: req.body.count,
       customerId: req.body.customerId,
     });
-    console.log(reply.data);
     return res.json(reply.data);
   } catch (err) {
     console.log(err);

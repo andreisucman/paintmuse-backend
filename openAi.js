@@ -28,9 +28,6 @@ async function requestImages({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  console.log("prompt is", prompt)
-  console.log("count is", count)
-
   const openai = new OpenAIApi(configuration);
 
   try {
@@ -102,6 +99,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
         return url;
       });
     }
+    
     return 1;
   } catch(err) {
     console.log(err);
