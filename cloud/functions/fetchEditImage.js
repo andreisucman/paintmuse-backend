@@ -1,13 +1,14 @@
 Parse.Cloud.define("fetchEditImage", async (req) => {
-  const { customerId, limit, fields, sorted, page, style, medium, fetchOnce } =
+  const { customerId, limit, fields, page, fetchOnce } =
     req.params;
 
   const query = new Parse.Query("EditImage");
+  
+  if (!customerId) return;
+  
+  query.equalTo("customerId", customerId);
   query.descending("createdAt");
-
-  if (customerId) {
-    query.equalTo("customerId", customerId);
-  }
+  
 
   if (fetchOnce) {
     const query = new Parse.Query("EditImage");
@@ -26,17 +27,6 @@ Parse.Cloud.define("fetchEditImage", async (req) => {
 
     return qResult.map((image) => image.attributes);
   }
-  if (sorted) {
-    query.descending("createdAt");
-  }
-
-  // if (style) {
-  //   query.equalTo("style", style);
-  // }
-
-  // if (medium) {
-  //   query.equalTo("medium", medium);
-  // }
 
   if (page) {
     query.limit(limit);

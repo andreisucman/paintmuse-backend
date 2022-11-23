@@ -1,11 +1,11 @@
 Parse.Cloud.define("fetchTextToImage", async (req) => {
-  const { customerId, limit, fields, sorted, page, style, medium, fetchOnce } =
+  const { customerId, limit, fields, page, style, medium, fetchOnce } =
     req.params;
 
   const query = new Parse.Query("TextToImage");
 
-  query.descending("createdAt");
   query.equalTo("isPrivate", false);
+  query.descending("createdAt");
   
   if (customerId) {
     query.equalTo("customerId", customerId);
@@ -27,9 +27,6 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
     const qResult = await q.find();
 
     return qResult.map((image) => image.attributes);
-  }
-  if (sorted) {
-    query.descending("createdAt");
   }
 
   // if (style) {

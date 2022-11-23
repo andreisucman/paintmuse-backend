@@ -9,7 +9,7 @@ const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 const api = new ParseServer({
   /* General */
   databaseURI: process.env.MONGODB_URI,
-  cloud: __dirname + "/cloud/main.js",
+  cloud: process.env.CLOUD_FUNCTIONS || __dirname + "/cloud/main.js",
   serverURL: process.env.SERVER_URL || "http://localhost:3001/parse",
 
   /* Security */
@@ -81,15 +81,16 @@ app.options("*", cors());
 
 app.post("/requestImages", cors(), async (req, res) => {
   try {
-    const reply = await requestImages({
+    const requestData = {
       prompt: req.body.prompt,
       count: req.body.count,
       style: req.body.style,
       medium: req.body.medium,
       customerId: req.body.customerId,
       query: req.body.query,
-    });
-    return res.json(reply.data);
+    };
+    const reply = await requestImages(requestData);
+    return res.json("request data is", requestData);
   } catch (err) {
     console.log(err);
     res.status(404).send(err);

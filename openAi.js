@@ -28,6 +28,9 @@ async function requestImages({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
+  console.log("prompt is", prompt)
+  console.log("count is", count)
+
   const openai = new OpenAIApi(configuration);
 
   try {
