@@ -8,8 +8,8 @@ const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 
 const api = new ParseServer({
   /* General */
-  databaseURI: process.env.POSTGRESQL_URI,
-  cloud: "./cloud/main.js",
+  databaseURI: process.env.MONGODB_URI,
+  cloud: process.env.CLOUD_CODE_MAIL || __dirname + "./cloud/main.js",
   serverURL: process.env.SERVER_URL || "http://localhost:3001/parse",
 
   /* Security */
