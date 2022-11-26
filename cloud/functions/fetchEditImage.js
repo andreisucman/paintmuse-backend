@@ -4,12 +4,11 @@ Parse.Cloud.define("fetchEditImage", async (req) => {
 
   const query = new Parse.Query("EditImage");
   
-  if (!customerId) return;
+  if (!customerId) return [];
   
   query.equalTo("customerId", customerId);
   query.descending("createdAt");
   
-
   if (fetchOnce) {
     const query = new Parse.Query("EditImage");
     query.descending("createdAt");
