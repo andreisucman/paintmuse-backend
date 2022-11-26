@@ -35,6 +35,7 @@ async function requestImages({
       prompt,
       n: count,
       size: "1024x1024",
+      user: customerId,
     });
 
     const request = require("request").defaults({ encoding: null });
@@ -72,13 +73,14 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
   const openai = new OpenAIApi(configuration);
 
   try {
-    const response = await openai.createImageEdit(
-      request.get(original, async (body) => body),
-      request.get(mask, async (body) => body),
+    const response = await openai.createImageEdit({
+      image: request.get(original, async (body) => body),
+      mask: request.get(mask, async (body) => body),
       prompt,
-      count,
-      "1024x1024"
-    );
+      n: count,
+      size: "1024x1024",
+      user: customerId,
+    });
 
     const latestIndex = await getLatestIndexEdit();
     const isPrivate = await checkIfPrivate(customerId);
@@ -114,11 +116,12 @@ async function requestVariation({ original, count, customerId }) {
   const openai = new OpenAIApi(configuration);
 
   try {
-    const response = await openai.createImageVariation(
-      request.get(original, async (err, res, body) => body),
-      count,
-      "1024x1024"
-    );
+    const response = await openai.createImageVariation({
+      image: request.get(original, async (err, res, body) => body),
+      n: count,
+      size: "1024x1024",
+      user: customerId,
+    });
 
     const latestIndex = await getLatestIndexVariate();
     const isPrivate = await checkIfPrivate(customerId);
