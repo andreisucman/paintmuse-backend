@@ -121,7 +121,7 @@ async function requestVariation({ original, count, customerId }) {
     );
 
     const latestIndex = await getLatestIndexVariate();
-    // const isPrivate = await checkIfPrivate(customerId);
+    const isPrivate = await checkIfPrivate(customerId);
 
     for (let i = 0; i < response.data.data.length; i++) {
       request.get(response.data.data[i].url, async (err, res, body) => {
