@@ -51,7 +51,7 @@ async function requestImages({
           medium,
           tableName: "TextToImage",
           index: latestIndex + 1,
-          isPrivate
+          isPrivate,
         });
 
         return url;
@@ -69,7 +69,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  const openai = new OpenAIApi(configuration)
+  const openai = new OpenAIApi(configuration);
 
   try {
     const response = await openai.createImageEdit(
@@ -79,10 +79,10 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
       count,
       "1024x1024"
     );
-  
+
     const latestIndex = await getLatestIndexEdit();
-    // const isPrivate = await checkIfPrivate(customerId);
-  
+    const isPrivate = await checkIfPrivate(customerId);
+
     for (let i = 0; i < response.data.data.length; i++) {
       request.get(response.data.data[i].url, async (err, res, body) => {
         const url = await resizeAndSave({
@@ -93,15 +93,15 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
           mask,
           tableName: "EditImage",
           index: latestIndex + 1,
-          isPrivate
+          isPrivate,
         });
-  
+
         return url;
       });
     }
-    
+
     return 1;
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
@@ -119,10 +119,10 @@ async function requestVariation({ original, count, customerId }) {
       count,
       "1024x1024"
     );
-  
+
     const latestIndex = await getLatestIndexVariate();
     // const isPrivate = await checkIfPrivate(customerId);
-  
+
     for (let i = 0; i < response.data.data.length; i++) {
       request.get(response.data.data[i].url, async (err, res, body) => {
         const url = await resizeAndSave({
@@ -131,15 +131,15 @@ async function requestVariation({ original, count, customerId }) {
           original,
           tableName: "VariateImage",
           index: latestIndex + 1,
-          isPrivate
+          isPrivate,
         });
-  
+
         return url;
       });
     }
-  
+
     return 1;
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
