@@ -131,11 +131,13 @@ app.post("/requestVariation", cors(), async (req, res) => {
 
 app.post("/updateQuota", cors(), async (req, res) => {
   try {
-    await updateQuota({
+    const request = {
       mode: req.body.mode,
       amount: req.body.amount,
       customerId: req.body.customerId,
-    });
+    };
+    console.log(request);
+    await updateQuota(request);
     return res.status(200);
   } catch (err) {
     console.log(err);
