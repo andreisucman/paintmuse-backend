@@ -23,7 +23,7 @@ Parse.Cloud.define("register", async (req) => {
   user.set("password", passwordOne);
   user.set("passwordLength", passwordOne.length);
   user.set("customerId", uuidv4());
-  user.set("customerTier", 0);
+  user.set("customerPlan", 0);
 
   try {
     if (!termsAccepted) {

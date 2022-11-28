@@ -1,7 +1,7 @@
 const { getTags } = require("../../helpers/getTags");
 
 Parse.Cloud.define("findImages", async (req) => {
-  const { searchQuery, limit, page, style, medium, customerId } = req.params;
+  const { searchQuery, limit, page, style, medium, customerId, fields } = req.params;
   const query = new Parse.Query("TextToImage");
 
   let words;
@@ -22,7 +22,7 @@ Parse.Cloud.define("findImages", async (req) => {
     query.equalTo("customerId", customerId);
   }
 
-  query.select(["query", "medium", "style", "url"]);
+  query.select(fields);
 
   if (searchQuery && searchQuery !== "Describe the image you're looking for") {
     if (style && style !== "Select style") {
@@ -85,7 +85,6 @@ Parse.Cloud.define("findImages", async (req) => {
         query.equalTo("style", style);
         matching = await query.find();
         matchingLength = matching.length;
-        console.log("worked", matching);
       }
     } else {
       if (medium && medium !== "Select medium") {

@@ -23,7 +23,7 @@ const api = new ParseServer({
   },
 
   /* Email Verification */
-  verifyUserEmails: true,
+  // verifyUserEmails: true,
   publicServerURL: process.env.SERVER_URL || "http://localhost:3001/parse",
   appName: process.env.APP_NAME || "Paintmuse",
 

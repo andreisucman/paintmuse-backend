@@ -6,7 +6,6 @@ function imageToBuffer(file) {
   // convert binary data to base64 encoded string
   
   const buffer = new Buffer(bitmap).toString('base64')
-  console.log(buffer)
   return buffer;
 }
 

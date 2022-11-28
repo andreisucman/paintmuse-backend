@@ -6,9 +6,9 @@ async function checkIfPrivate(customerId) {
   query.equalTo("customerId", customerId);
   const result = await query.first();
 
-  const tier = result.attributes.customerTier;
+  const plan = result.attributes.customerPlan;
 
-  return tier > 0;
+  return plan > 0;
 }
 
 module.exports = { checkIfPrivate };
