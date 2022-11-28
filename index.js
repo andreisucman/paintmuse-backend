@@ -129,9 +129,9 @@ app.post("/requestVariation", cors(), async (req, res) => {
   }
 });
 
-app.post("/updateQuota", cors(), (req, res) => {
+app.post("/updateQuota", cors(), async (req, res) => {
   try {
-    updateQuota({
+    await updateQuota({
       mode: req.body.mode,
       amount: req.body.amount,
       customerId: req.body.customerId,
