@@ -4,7 +4,8 @@ require("dotenv").config();
 async function updateQuota({ mode, amount, email }) {
   Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
 
-  const query = new Parse.Query(Parse.User);
+  const User = Parse.Object.extend(Parse.User);
+  const query = new Parse.Query(User);
   query.equalTo("email", email);
   const result = await query.first({ useMasterKey: true });
 
