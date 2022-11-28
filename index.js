@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
+const { updateQuota } = require("./helpers/updateQuota");
 
 const api = new ParseServer({
   /* General */
@@ -122,6 +123,20 @@ app.post("/requestVariation", cors(), async (req, res) => {
       customerId: req.body.customerId,
     });
     return res.json(reply.data);
+  } catch (err) {
+    console.log(err);
+    res.status(404).send(err);
+  }
+});
+
+app.post("/updateQuota", cors(), (req, res) => {
+  try {
+    updateQuota({
+      mode: req.body.mode,
+      amount: req.body.amount,
+      customerId: req.body.customerId,
+    });
+    return res.status(200);
   } catch (err) {
     console.log(err);
     res.status(404).send(err);

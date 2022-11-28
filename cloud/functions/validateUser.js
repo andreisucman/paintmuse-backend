@@ -1,4 +1,6 @@
-Parse.Cloud.define("validateUser", async ({ user }) => {
+Parse.Cloud.define("validateUser", async (req) => {
+  const { user } = req.params;
+
   const query = new Parse.Query("Customers");
   query.equalTo("objectId", user.objectId);
   const result = await query.first();

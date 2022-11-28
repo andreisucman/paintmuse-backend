@@ -7,7 +7,6 @@ const { getLatestIndexEdit } = require("./helpers/getLatestIndexEdit");
 const { getLatestIndexVariate } = require("./helpers/getLatestIndexVariate");
 const { checkIfPrivate } = require("./helpers/checkIfPrivate");
 const request = require("request").defaults({ encoding: null });
-
 require("dotenv").config();
 
 async function requestImages({
