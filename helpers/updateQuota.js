@@ -2,9 +2,11 @@ const Parse = require("parse/node");
 require("dotenv").config();
 
 async function updateQuota({ mode, amount, email }) {
+  Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
+
   const query = new Parse.Query(Parse.User);
   query.equalTo("email", email);
-  const result = await query.first();
+  const result = await query.first({ useMasterKey: true });
 
   if (mode === "payment") {
     const currentUsdQuota = result.attributes.quotaUsd;
@@ -17,7 +19,7 @@ async function updateQuota({ mode, amount, email }) {
       );
     result.set("quotaUsd", newUsdQuota);
     result.set("quotaImg", newImgQuota);
-    await result.save();
+    await result.save(null, { useMasterKey: true });
     return;
   }
 
@@ -31,7 +33,7 @@ async function updateQuota({ mode, amount, email }) {
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 1);
       result.set("quotaImg", 90);
-      await result.save();
+      await result.save(null, { useMasterKey: true });
       return;
 
     } else {
@@ -41,7 +43,7 @@ async function updateQuota({ mode, amount, email }) {
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 2);
       result.set("quotaImg", 2160);
-      await result.save();
+      await result.save(null, { useMasterKey: true });
       return;
     }
   }
