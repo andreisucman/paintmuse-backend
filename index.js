@@ -134,7 +134,7 @@ app.post("/updateQuota", cors(), async (req, res) => {
     const request = {
       mode: req.body.mode,
       amount: req.body.amount,
-      customerId: req.body.customerId,
+      email: req.body.email,
     };
     console.log(request);
     await updateQuota(request);

@@ -1,9 +1,9 @@
 const Parse = require("parse/node");
 require("dotenv").config();
 
-async function updateQuota({ mode, amount, customerId }) {
+async function updateQuota({ mode, amount, email }) {
   const query = new Parse.Query(Parse.User);
-  query.equalTo("customerId", customerId);
+  query.equalTo("email", email);
   const result = await query.first();
 
   if (mode === "payment") {
