@@ -14,9 +14,7 @@ async function updateQuota({ mode, amount, email }) {
     const newUsdQuota = currentUsdQuota + amount / 100;
     const newImgQuota =
       currentImgQuota +
-      Math.round(
-        amount / 100 / process.env.PREPAID_PLAN_IMAGE_PRICE
-      );
+      Math.round(amount / 100 / process.env.PREPAID_PLAN_IMAGE_PRICE);
     result.set("quotaUsd", newUsdQuota);
     result.set("quotaImg", newImgQuota);
     await result.save(null, { useMasterKey: true });
@@ -24,22 +22,17 @@ async function updateQuota({ mode, amount, email }) {
   }
 
   if (mode === "subscription") {
-    const currentExpirationDate = result.attributes.renewsOn;
+    const currentExpirationDate = Math.round(new Date(result.attributes.renewsOn) / 1000);
 
-    if (amount < 100) {
-      const newExpirationDate = new Date(
-        Math.round(currentExpirationDate / 1000) + 2629743
-      );
+    if (amount / 100 < 100) {
+      const newExpirationDate = new Date(currentExpirationDate + 2629743);
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 1);
       result.set("quotaImg", 90);
       await result.save(null, { useMasterKey: true });
       return;
-
     } else {
-      const newExpirationDate = new Date(
-        Math.round(currentExpirationDate / 1000) + 31556926
-      );
+      const newExpirationDate = new Date(currentExpirationDate + 31556926);
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 2);
       result.set("quotaImg", 2160);
