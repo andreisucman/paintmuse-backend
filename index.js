@@ -122,7 +122,6 @@ app.post("/requestImages", async (req, res) => {
       query: req.body.query,
     };
     const reply = await requestImages(requestData);
-    console.log(reply);
     return res.json(reply.data);
   } catch (err) {
     console.log(err);

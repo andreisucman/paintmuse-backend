@@ -23,7 +23,7 @@ async function requestImages({
     return {
       data: {
         message:
-          "Insufficient balance. Please add funds or subscribe to a plan",
+          "Insufficient balance. Please add funds or subscribe to a plan.",
       },
     };
   }
@@ -77,7 +77,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
     return {
       data: {
         message:
-          "Insufficient balance. Please add funds or subscribe to a plan",
+          "Insufficient balance. Please add funds or subscribe to a plan.",
       },
     };
   }
@@ -132,7 +132,7 @@ async function requestVariation({ original, count, customerId }) {
     return {
       data: {
         message:
-          "Insufficient balance. Please add funds or subscribe to a plan",
+          "Insufficient balance. Please add funds or subscribe to a plan.",
       },
     };
   }
