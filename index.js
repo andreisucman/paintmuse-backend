@@ -1,10 +1,9 @@
+require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
 const bodyParser = require("body-parser");
-const cors = require("cors");
-
-require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
@@ -83,7 +82,7 @@ app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
   (req, res) => {
-    const event = req.body;
+    let event = req.body;
     console.log("reached here 136");
 
     const signature = req.headers["stripe-signature"];
