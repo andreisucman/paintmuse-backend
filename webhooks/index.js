@@ -13,11 +13,9 @@ async function webhookHandler(event) {
       };
 
       console.log("PARAMS ARE", params);
-
       updateQuota(params);
     }
 
-    // Return a response to acknowledge receipt of the event.
   } else {
     res.setHeader("Allow", "POST");
     res.status(405).end("Method Not Allowed");

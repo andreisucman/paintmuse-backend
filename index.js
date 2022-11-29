@@ -133,15 +133,19 @@ app.post("/requestVariation", cors(), async (req, res) => {
 
 app.post("/webhook", cors(), (req, res) => {
   const event = req.body;
+  console.log("reached here 136");
 
   const signature = request.headers["stripe-signature"];
 
   try {
+    console.log("reached here 141");
     event = stripe.webhooks.constructEvent(
       request.body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+
+    console.log("reached here 148", event);
   } catch (err) {
     console.log(`⚠️  Webhook signature verification failed.`, err.message);
     return response.sendStatus(400);
@@ -153,7 +157,9 @@ app.post("/webhook", cors(), (req, res) => {
 
 app.post("/checkout_sessions", cors(), async (req, res) => {
   if (req.method === "POST") {
+    console.log("reached here 156");
     try {
+      console.log("reached here 158");
       const session = await stripe.checkout.sessions.create({
         mode: req.body.mode,
         payment_method_types: ["card"],
@@ -163,6 +169,7 @@ app.post("/checkout_sessions", cors(), async (req, res) => {
         customer_email: req.body.email,
       });
 
+      console.log("reached here 168", session);
       res.status(200).json(session);
     } catch (err) {
       res.status(500).json({ statusCode: 500, message: err.message });
@@ -175,12 +182,13 @@ app.post("/checkout_sessions", cors(), async (req, res) => {
 
 app.post("/checkout_sessions/:id", cors(), async (req, res) => {
   const id = req.query.id;
+  console.log("reached here 181");
   try {
     if (!id.startsWith("cs_")) {
       throw Error("Incorrect CheckoutSession ID.");
     }
     const checkout_session = await stripe.checkout.sessions.retrieve(id);
-
+    console.log("reached here 187", checkout_session);
     res.status(200).json(checkout_session);
   } catch (err) {
     res.status(500).json({ statusCode: 500, message: err.message });
