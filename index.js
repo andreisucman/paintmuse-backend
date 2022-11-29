@@ -186,7 +186,7 @@ app.post("/checkout_sessions/:id", async (req, res) => {
   const id = req.query.id;
   try {
     if (!id.startsWith("cs_")) {
-      throw Error("Incorrect CheckoutSession ID.");
+      throw Error("Incorrect Checkout Session ID.");
     }
     const checkout_session = await stripe.checkout.sessions.retrieve(id);
     res.status(200).json(checkout_session);
