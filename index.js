@@ -149,7 +149,7 @@ app.post("/webhook", cors(), (req, res) => {
     console.log("reached here 148", event);
   } catch (err) {
     console.log(`⚠️  Webhook signature verification failed.`, err.message);
-    return response.sendStatus(400);
+    return res.sendStatus(400);
   }
 
   webhookHandler(event);
