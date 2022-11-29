@@ -1,13 +1,14 @@
 const Parse = require("parse/node");
 require("dotenv").config();
 
-async function updateQuota({ mode, amount, email }) {
+async function updateQuota({ mode, amount, email, customer }) {
   Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
 
   const User = Parse.Object.extend(Parse.User);
   const query = new Parse.Query(User);
   query.equalTo("email", email);
   const result = await query.first({ useMasterKey: true });
+  const stripeCustId = result.attributes.stripeCustId;
 
   if (mode === "payment") {
     const plan = result.attributes.customerPlan;
@@ -15,22 +16,30 @@ async function updateQuota({ mode, amount, email }) {
     const currentPrepUsdQuota = result.attributes.prepQuotaUsd;
     const currentPrepImgQuota = result.attributes.prepQuotaImg;
     const newPrepUsdQuota = currentPrepUsdQuota + amount / 100;
-    
+
     let newPrepImgQuota;
 
     if (plan === 0) {
-      newPrepImgQuota = currentPrepImgQuota +
-      Math.round(amount / 100 / process.env.PREPAID_PLAN_IMAGE_PRICE);
+      newPrepImgQuota =
+        currentPrepImgQuota +
+        Math.round(amount / 100 / process.env.PREPAID_PLAN_IMAGE_PRICE);
     } else if (plan === 1) {
-      newPrepImgQuota = currentPrepImgQuota +
-      Math.round(amount / 100 / process.env.MONTHLY_PLAN_EXTRA_PRICE);
+      newPrepImgQuota =
+        currentPrepImgQuota +
+        Math.round(amount / 100 / process.env.MONTHLY_PLAN_EXTRA_PRICE);
     } else {
-      newPrepImgQuota = currentPrepImgQuota +
-      Math.round(amount / 100 / process.env.YEARLY_PLAN_EXTRA_PRICE);
+      newPrepImgQuota =
+        currentPrepImgQuota +
+        Math.round(amount / 100 / process.env.YEARLY_PLAN_EXTRA_PRICE);
     }
 
     result.set("prepQuotaUsd", newPrepUsdQuota);
     result.set("prepQuotaImg", newPrepImgQuota);
+
+    if (!stripeCustId) {
+      result.set("stripeCustId", customer);
+    }
+
     await result.save(null, { useMasterKey: true });
     return;
   }
@@ -45,12 +54,21 @@ async function updateQuota({ mode, amount, email }) {
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 1);
       result.set("subQuotaImg", 90);
+
+      if (!stripeCustId) {
+        result.set("stripeCustId", customer);
+      }
+
       await result.save(null, { useMasterKey: true });
       return;
-
     } else {
       if (result.attributes.prepQuotaUsd > 0) {
-        result.set("prepQuotaImg", Math.round(result.attributes.prepQuotaUsd / process.env.YEARLY_PLAN_EXTRA_PRICE))
+        result.set(
+          "prepQuotaImg",
+          Math.round(
+            result.attributes.prepQuotaUsd / process.env.YEARLY_PLAN_EXTRA_PRICE
+          )
+        );
       }
       const currentSubQuota = result.attributes.subQuotaImg;
       const newExpirationDate = new Date(
@@ -59,6 +77,11 @@ async function updateQuota({ mode, amount, email }) {
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 2);
       result.set("subQuotaImg", currentSubQuota + 2160);
+
+      if (!stripeCustId) {
+        result.set("stripeCustId", customer);
+      }
+
       await result.save(null, { useMasterKey: true });
       return;
     }
