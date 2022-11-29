@@ -159,7 +159,14 @@ app.post("/checkout_sessions", cors(), async (req, res) => {
   if (req.method === "POST") {
     console.log("reached here 156");
     try {
-      console.log("reached here 158");
+      console.log("reached here 158", {
+        mode: req.body.mode,
+        payment_method_types: ["card"],
+        line_items: req.body.items,
+        success_url: `${req.headers.origin}/postpayment?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/pricing`,
+        customer_email: req.body.email,
+      });
       const session = await stripe.checkout.sessions.create({
         mode: req.body.mode,
         payment_method_types: ["card"],
