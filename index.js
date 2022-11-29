@@ -80,14 +80,6 @@ const httpServer = require("http").createServer(app);
 const mountPath = process.env.PARSE_MOUNT || "/parse";
 app.use(bodyParser.json());
 app.use(mountPath, api);
-app.use(
-  express.json({
-    limit: "5mb",
-    verify: (req, res, buf) => {
-      req.rawBody = buf.toString();
-    },
-  })
-);
 
 app.options("*", cors());
 
@@ -140,29 +132,34 @@ app.post("/requestVariation", cors(), async (req, res) => {
   }
 });
 
-app.post("/webhook", cors(), (req, res) => {
-  const event = req.body;
-  console.log("reached here 136");
+app.post(
+  "/webhook",
+  cors(),
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const event = req.body;
+    console.log("reached here 136");
 
-  const signature = req.headers["stripe-signature"];
+    const signature = req.headers["stripe-signature"];
 
-  try {
-    console.log("reached here 141");
-    event = stripe.webhooks.constructEvent(
-      req.rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    try {
+      console.log("reached here 141");
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
 
-    console.log("reached here 148", event);
-  } catch (err) {
-    console.log(`⚠️  Webhook signature verification failed.`, err.message);
-    return res.sendStatus(400);
+      console.log("reached here 148", event);
+    } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      return res.sendStatus(400);
+    }
+
+    webhookHandler(event);
+    res.json({ received: true });
   }
-
-  webhookHandler(event);
-  res.json({ received: true });
-});
+);
 
 app.post("/checkout_sessions", cors(), async (req, res) => {
   if (req.method === "POST") {
