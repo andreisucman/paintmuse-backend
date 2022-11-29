@@ -52,12 +52,13 @@ async function updateQuota({ mode, amount, email }) {
       if (result.attributes.prepQuotaUsd > 0) {
         result.set("prepQuotaImg", Math.round(result.attributes.prepQuotaUsd / process.env.YEARLY_PLAN_EXTRA_PRICE))
       }
+      const currentSubQuota = result.attributes.subQuotaImg;
       const newExpirationDate = new Date(
         (currentExpirationDate / 1000 + 28927183) * 1000
       );
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 2);
-      result.set("subQuotaImg", 2160);
+      result.set("subQuotaImg", currentSubQuota + 2160);
       await result.save(null, { useMasterKey: true });
       return;
     }
