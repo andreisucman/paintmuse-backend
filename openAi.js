@@ -17,16 +17,11 @@ async function requestImages({
   medium,
   customerId,
 }) {
-  Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
-  const User = Parse.Object.extend(Parse.User);
-  const q = new Parse.Query(User);
-  q.equalTo("customerId", customerId);
-  const result = await query.first();
+  const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
 
-  if (result.attributes.quotaImg < 1)
+  if (!pass)
     return {
-      message:
-        "Insufficient balance. Please add funds, or subscribe to a plan.",
+      message: "Insufficient balance. Please add funds or subscribe to a plan",
     };
 
   const configuration = new Configuration({
@@ -64,21 +59,7 @@ async function requestImages({
       });
     }
 
-    const currenPrepQuotaUsd = result.attributes.prepQuotaUsd;
-    const currentPrepQuotaImg = result.attributes.prepQuotaImg;
-    const plan = result.attributes.customerPlan;
-
-    if (plan === 0) {
-      const requestFee = count * process.env.PREPAID_PLAN_IMAGE_PRICE;
-      const newPrepQuotaUsd = currenPrepQuotaUsd - requestFee;
-      const newPrepQuotaImg = currentPrepQuotaImg - count;
-      result.set("prepQuotaUsd", newPrepQuotaUsd);
-      result.set("prepQuotaImg", newPrepQuotaImg);
-      await result.save(null, { useMasterKey: true });
-    } else {
-      
-    }
-
+    Parse.Cloud.run("deductBalance", { customerId, count });
     return 1;
   } catch (err) {
     console.log(err);
@@ -86,6 +67,13 @@ async function requestImages({
 }
 
 async function requestEdit({ prompt, count, original, mask, customerId }) {
+  const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
+
+  if (!pass)
+    return {
+      message: "Insufficient balance. Please add funds or subscribe to a plan",
+    };
+
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -122,6 +110,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
       });
     }
 
+    Parse.Cloud.run("deductBalance", { customerId, count });
     return 1;
   } catch (err) {
     console.log(err);
@@ -129,6 +118,13 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
 }
 
 async function requestVariation({ original, count, customerId }) {
+  const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
+
+  if (!pass)
+    return {
+      message: "Insufficient balance. Please add funds or subscribe to a plan",
+    };
+
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -161,6 +157,7 @@ async function requestVariation({ original, count, customerId }) {
       });
     }
 
+    Parse.Cloud.run("deductBalance", { customerId, count });
     return 1;
   } catch (err) {
     console.log(err);

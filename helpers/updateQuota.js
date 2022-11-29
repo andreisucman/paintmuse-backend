@@ -30,7 +30,7 @@ async function updateQuota({ mode, amount, email, customer }) {
     } else {
       newPrepImgQuota =
         currentPrepImgQuota +
-        Math.round(amount / 100 / process.env.YEARLY_PLAN_EXTRA_PRICE);
+        Math.round(amount / 100 / process.env.ANNUAL_PLAN_EXTRA_PRICE);
     }
 
     result.set("prepQuotaUsd", newPrepUsdQuota);
@@ -66,7 +66,7 @@ async function updateQuota({ mode, amount, email, customer }) {
         result.set(
           "prepQuotaImg",
           Math.round(
-            result.attributes.prepQuotaUsd / process.env.YEARLY_PLAN_EXTRA_PRICE
+            result.attributes.prepQuotaUsd / process.env.ANNUAL_PLAN_EXTRA_PRICE
           )
         );
       }
