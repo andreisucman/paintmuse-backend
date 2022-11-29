@@ -136,7 +136,7 @@ app.post("/webhook", cors(), (req, res) => {
   const event = req.body;
   console.log("reached here 136");
 
-  const signature = request.headers["stripe-signature"];
+  const signature = req.headers["stripe-signature"];
 
   try {
     console.log("reached here 141");
