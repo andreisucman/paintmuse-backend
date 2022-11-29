@@ -7,7 +7,6 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
-const { createCheckoutSession } = require("./checkout/createCheckoutSession");
 const { webhookHandler } = require("./webhooks");
 
 const api = new ParseServer({
