@@ -8,12 +8,12 @@ async function webhookHandler(event) {
     const params = {
       mode: object.mode,
       amount: object.amount_subtotal,
-      email: object.customer_email,
+      email: object.customer_email
     };
 
-    console.log("PARAMS ARE", params);
     updateQuota(params);
   }
+
 }
 
 module.exports = { webhookHandler };

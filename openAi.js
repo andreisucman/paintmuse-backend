@@ -17,11 +17,17 @@ async function requestImages({
   medium,
   customerId,
 }) {
-  // Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
-  // Parse.serverURL = process.env.SERVER_URL;
+  Parse.initialize(process.env.APP_ID, undefined, process.env.MASTER_KEY);
+  const User = Parse.Object.extend(Parse.User);
+  const q = new Parse.Query(User);
+  q.equalTo("customerId", customerId);
+  const result = await query.first();
 
-  // const allow = await Parse.Cloud.run("validateUser", { user });
-  // if (!allow) return { allow: false, message: "Please top up your balance or subscribe to a plan."};
+  if (result.attributes.quotaImg < 1)
+    return {
+      message:
+        "Insufficient balance. Please add funds, or subscribe to a plan.",
+    };
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -56,6 +62,21 @@ async function requestImages({
 
         return url;
       });
+    }
+
+    const currenPrepQuotaUsd = result.attributes.prepQuotaUsd;
+    const currentPrepQuotaImg = result.attributes.prepQuotaImg;
+    const plan = result.attributes.customerPlan;
+
+    if (plan === 0) {
+      const requestFee = count * process.env.PREPAID_PLAN_IMAGE_PRICE;
+      const newPrepQuotaUsd = currenPrepQuotaUsd - requestFee;
+      const newPrepQuotaImg = currentPrepQuotaImg - count;
+      result.set("prepQuotaUsd", newPrepQuotaUsd);
+      result.set("prepQuotaImg", newPrepQuotaImg);
+      await result.save(null, { useMasterKey: true });
+    } else {
+      
     }
 
     return 1;

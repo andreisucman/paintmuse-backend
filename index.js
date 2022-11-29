@@ -86,19 +86,15 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
   }
 
   let event = req.body;
-  console.log("reached here 136");
-
   const signature = req.headers["stripe-signature"];
 
   try {
-    console.log("reached here 141");
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
 
-    console.log("reached here 148", event);
   } catch (err) {
     console.log(`⚠️  Webhook signature verification failed.`, err.message);
     return res.sendStatus(400);
@@ -166,16 +162,7 @@ app.post("/requestVariation", async (req, res) => {
 
 app.post("/checkout_sessions", async (req, res) => {
   if (req.method === "POST") {
-    console.log("reached here 156");
     try {
-      console.log("reached here 158", {
-        mode: req.body.mode,
-        payment_method_types: ["card"],
-        line_items: req.body.items,
-        success_url: `${req.headers.origin}/postpayment?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/pricing`,
-        customer_email: req.body.email,
-      });
       const session = await stripe.checkout.sessions.create({
         mode: req.body.mode,
         payment_method_types: ["card"],
@@ -185,7 +172,6 @@ app.post("/checkout_sessions", async (req, res) => {
         customer_email: req.body.email,
       });
 
-      console.log("reached here 168", session);
       res.status(200).json(session);
     } catch (err) {
       res.status(500).json({ statusCode: 500, message: err.message });
@@ -198,13 +184,11 @@ app.post("/checkout_sessions", async (req, res) => {
 
 app.post("/checkout_sessions/:id", async (req, res) => {
   const id = req.query.id;
-  console.log("reached here 181");
   try {
     if (!id.startsWith("cs_")) {
       throw Error("Incorrect CheckoutSession ID.");
     }
     const checkout_session = await stripe.checkout.sessions.retrieve(id);
-    console.log("reached here 187", checkout_session);
     res.status(200).json(checkout_session);
   } catch (err) {
     res.status(500).json({ statusCode: 500, message: err.message });
