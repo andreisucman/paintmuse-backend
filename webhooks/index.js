@@ -14,6 +14,15 @@ async function webhookHandler(event) {
     updateQuota(params);
   }
 
+  if (event.type === "customer.subscription.updated") {
+    const object = event.data.object;
+    console.log("ONE", object.cancel_at_period_end);
+    console.log("TWO", event.data.cancel_at_period_end);
+    console.log("THREE", event.cancel_at_period_end);
+
+    console.log(event);
+  }
+
 }
 
 module.exports = { webhookHandler };
