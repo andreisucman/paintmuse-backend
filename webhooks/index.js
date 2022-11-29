@@ -27,9 +27,7 @@ async function webhookHandler(event) {
     query.equalTo("stripeCustId", object.customer);
     const result = await query.first();
 
-    console.log(result);
-
-    if (!result.attributes.cancelledPlan) {
+    if (object.cancel_at_period_end) {
       result.set("cancelledPlan", result.attributes.customerPlan);
       result.set("customerPlan", 0);
       await result.save(null, { useMasterKey: true });
