@@ -150,21 +150,19 @@ app.post("/requestVariation", cors(), async (req, res) => {
 app.post("/webhook", express.json({ type: "application/json" }), (req, res) => {
   const event = req.body;
 
-  if (endpointSecret) {
-    const signature = request.headers["stripe-signature"];
+  const signature = request.headers["stripe-signature"];
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        request.body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.log(`⚠️  Webhook signature verification failed.`, err.message);
-      return response.sendStatus(400);
-    }
+  try {
+    event = stripe.webhooks.constructEvent(
+      request.body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.log(`⚠️  Webhook signature verification failed.`, err.message);
+    return response.sendStatus(400);
   }
-  
+
   webhookHandler(event);
   res.json({ received: true });
 });
