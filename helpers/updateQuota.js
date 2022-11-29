@@ -10,12 +10,25 @@ async function updateQuota({ mode, amount, email }) {
   const result = await query.first({ useMasterKey: true });
 
   if (mode === "payment") {
+    const plan = result.attributes.customerPlan;
+
     const currentPrepUsdQuota = result.attributes.prepQuotaUsd;
     const currentPrepImgQuota = result.attributes.prepQuotaImg;
     const newPrepUsdQuota = currentPrepUsdQuota + amount / 100;
-    const newPrepImgQuota =
-      currentPrepImgQuota +
+    
+    let newPrepImgQuota;
+
+    if (plan === 0) {
+      newPrepImgQuota = currentPrepImgQuota +
       Math.round(amount / 100 / process.env.PREPAID_PLAN_IMAGE_PRICE);
+    } else if (plan === 1) {
+      newPrepImgQuota = currentPrepImgQuota +
+      Math.round(amount / 100 / process.env.MONTHLY_PLAN_EXTRA_PRICE);
+    } else {
+      newPrepImgQuota = currentPrepImgQuota +
+      Math.round(amount / 100 / process.env.YEARLY_PLAN_EXTRA_PRICE);
+    }
+
     result.set("prepQuotaUsd", newPrepUsdQuota);
     result.set("prepQuotaImg", newPrepImgQuota);
     await result.save(null, { useMasterKey: true });
@@ -36,7 +49,9 @@ async function updateQuota({ mode, amount, email }) {
       return;
 
     } else {
-
+      if (result.attributes.prepQuotaUsd > 0) {
+        result.set("prepQuotaImg", Math.round(result.attributes.prepQuotaUsd / process.env.YEARLY_PLAN_EXTRA_PRICE))
+      }
       const newExpirationDate = new Date(
         (currentExpirationDate / 1000 + 28927183) * 1000
       );
