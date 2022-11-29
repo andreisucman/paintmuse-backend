@@ -133,7 +133,7 @@ app.post("/requestVariation", cors(), async (req, res) => {
 });
 
 app.post("/webhook", cors(), (req, res) => {
-  const event = req.body;
+  let event = req.body;
   console.log("reached here 136");
 
   const signature = req.headers["stripe-signature"];
