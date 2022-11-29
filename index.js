@@ -80,6 +80,14 @@ const httpServer = require("http").createServer(app);
 const mountPath = process.env.PARSE_MOUNT || "/parse";
 app.use(bodyParser.json());
 app.use(mountPath, api);
+app.use(
+  express.json({
+    limit: "5mb",
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString();
+    },
+  })
+);
 
 app.options("*", cors());
 
@@ -133,7 +141,7 @@ app.post("/requestVariation", cors(), async (req, res) => {
 });
 
 app.post("/webhook", cors(), (req, res) => {
-  let event = req.body;
+  const event = req.body;
   console.log("reached here 136");
 
   const signature = req.headers["stripe-signature"];
@@ -141,7 +149,7 @@ app.post("/webhook", cors(), (req, res) => {
   try {
     console.log("reached here 141");
     event = stripe.webhooks.constructEvent(
-      req.body,
+      req.rawBody,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
