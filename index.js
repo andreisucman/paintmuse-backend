@@ -131,7 +131,7 @@ app.post("/requestVariation", cors(), async (req, res) => {
   }
 });
 
-app.post("/webhook", express.json({ type: "application/json" }), (req, res) => {
+app.post("/webhook", cors(), (req, res) => {
   const event = req.body;
 
   const signature = request.headers["stripe-signature"];
@@ -151,49 +151,41 @@ app.post("/webhook", express.json({ type: "application/json" }), (req, res) => {
   res.json({ received: true });
 });
 
-app.post(
-  "/checkout_sessions",
-  express.json({ type: "application/json" }),
-  async (req, res) => {
-    if (req.method === "POST") {
-      try {
-        const session = await stripe.checkout.sessions.create({
-          mode: req.body.mode,
-          payment_method_types: ["card"],
-          line_items: req.body.items,
-          success_url: `${req.headers.origin}/postpayment?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${req.headers.origin}/pricing`,
-          customer_email: req.body.email,
-        });
-
-        res.status(200).json(session);
-      } catch (err) {
-        res.status(500).json({ statusCode: 500, message: err.message });
-      }
-    } else {
-      res.setHeader("Allow", "POST");
-      res.status(405).end("Method Not Allowed");
-    }
-  }
-);
-
-app.post(
-  "/checkout_sessions/:id",
-  express.json({ type: "application/json" }),
-  async (req, res) => {
-    const id = req.query.id;
+app.post("/checkout_sessions", cors(), async (req, res) => {
+  if (req.method === "POST") {
     try {
-      if (!id.startsWith("cs_")) {
-        throw Error("Incorrect CheckoutSession ID.");
-      }
-      const checkout_session = await stripe.checkout.sessions.retrieve(id);
+      const session = await stripe.checkout.sessions.create({
+        mode: req.body.mode,
+        payment_method_types: ["card"],
+        line_items: req.body.items,
+        success_url: `${req.headers.origin}/postpayment?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/pricing`,
+        customer_email: req.body.email,
+      });
 
-      res.status(200).json(checkout_session);
+      res.status(200).json(session);
     } catch (err) {
       res.status(500).json({ statusCode: 500, message: err.message });
     }
+  } else {
+    res.setHeader("Allow", "POST");
+    res.status(405).end("Method Not Allowed");
   }
-);
+});
+
+app.post("/checkout_sessions/:id", cors(), async (req, res) => {
+  const id = req.query.id;
+  try {
+    if (!id.startsWith("cs_")) {
+      throw Error("Incorrect CheckoutSession ID.");
+    }
+    const checkout_session = await stripe.checkout.sessions.retrieve(id);
+
+    res.status(200).json(checkout_session);
+  } catch (err) {
+    res.status(500).json({ statusCode: 500, message: err.message });
+  }
+});
 
 const port = process.env.PORT || 3001;
 httpServer.listen(port, () => {
