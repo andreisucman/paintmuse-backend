@@ -19,10 +19,14 @@ async function requestImages({
 }) {
   const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
 
-  if (!pass)
+  if (!pass) {
     return {
-      message: "Insufficient balance. Please add funds or subscribe to a plan",
+      data: {
+        message:
+          "Insufficient balance. Please add funds or subscribe to a plan",
+      },
     };
+  }
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -69,10 +73,14 @@ async function requestImages({
 async function requestEdit({ prompt, count, original, mask, customerId }) {
   const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
 
-  if (!pass)
+  if (!pass) {
     return {
-      message: "Insufficient balance. Please add funds or subscribe to a plan",
+      data: {
+        message:
+          "Insufficient balance. Please add funds or subscribe to a plan",
+      },
     };
+  }
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -120,10 +128,14 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
 async function requestVariation({ original, count, customerId }) {
   const pass = await Parse.Cloud.run("validateBalance", { customerId, count });
 
-  if (!pass)
+  if (!pass) {
     return {
-      message: "Insufficient balance. Please add funds or subscribe to a plan",
+      data: {
+        message:
+          "Insufficient balance. Please add funds or subscribe to a plan",
+      },
     };
+  }
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
