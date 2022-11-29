@@ -83,7 +83,9 @@ app.use(mountPath, api);
 
 app.options("*", cors());
 
-app.post("/requestImages", cors(), async (req, res) => {
+app.use(cors());
+
+app.post("/requestImages", async (req, res) => {
   try {
     const requestData = {
       prompt: req.body.prompt,
@@ -101,7 +103,7 @@ app.post("/requestImages", cors(), async (req, res) => {
   }
 });
 
-app.post("/requestEdit", cors(), async (req, res) => {
+app.post("/requestEdit", async (req, res) => {
   try {
     const data = {
       prompt: req.body.prompt,
@@ -118,7 +120,7 @@ app.post("/requestEdit", cors(), async (req, res) => {
   }
 });
 
-app.post("/requestVariation", cors(), async (req, res) => {
+app.post("/requestVariation", async (req, res) => {
   try {
     const reply = await requestVariation({
       original: req.body.original,
@@ -134,7 +136,6 @@ app.post("/requestVariation", cors(), async (req, res) => {
 
 app.post(
   "/webhook",
-  cors(),
   express.raw({ type: "application/json" }),
   (req, res) => {
     const event = req.body;
@@ -161,7 +162,7 @@ app.post(
   }
 );
 
-app.post("/checkout_sessions", cors(), async (req, res) => {
+app.post("/checkout_sessions", async (req, res) => {
   if (req.method === "POST") {
     console.log("reached here 156");
     try {
@@ -193,7 +194,7 @@ app.post("/checkout_sessions", cors(), async (req, res) => {
   }
 });
 
-app.post("/checkout_sessions/:id", cors(), async (req, res) => {
+app.post("/checkout_sessions/:id", async (req, res) => {
   const id = req.query.id;
   console.log("reached here 181");
   try {
