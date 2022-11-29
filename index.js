@@ -2,10 +2,13 @@ const express = require("express");
 const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
 const bodyParser = require("body-parser");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cors = require("cors");
 require("dotenv").config();
+
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 const { updateQuota } = require("./helpers/updateQuota");
+const { webhookHandler } = require("./webhooks");
 
 const api = new ParseServer({
   /* General */
@@ -129,20 +132,42 @@ app.post("/requestVariation", cors(), async (req, res) => {
   }
 });
 
-app.post("/updateQuota", cors(), async (req, res) => {
-  try {
-    const request = {
-      mode: req.body.mode,
-      amount: req.body.amount,
-      email: req.body.email,
-    };
-    console.log(request);
-    await updateQuota(request);
-    return res.status(200);
-  } catch (err) {
-    console.log(err);
-    res.status(404).send(err);
+// app.post("/updateQuota", cors(), async (req, res) => {
+//   try {
+//     const request = {
+//       mode: req.body.mode,
+//       amount: req.body.amount,
+//       email: req.body.email,
+//     };
+//     console.log(request);
+//     await updateQuota(request);
+//     return res.status(200);
+//   } catch (err) {
+//     console.log(err);
+//     res.status(404).send(err);
+//   }
+// });
+
+app.post("/webhook", express.json({ type: "application/json" }), (req, res) => {
+  const event = req.body;
+
+  if (endpointSecret) {
+    const signature = request.headers["stripe-signature"];
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        request.body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      return response.sendStatus(400);
+    }
   }
+  
+  webhookHandler(event);
+  res.json({ received: true });
 });
 
 const port = process.env.PORT || 3001;
