@@ -3,8 +3,8 @@ const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-require("dotenv").config();
 
+require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
@@ -141,7 +141,7 @@ app.post("/webhook", cors(), (req, res) => {
   try {
     console.log("reached here 141");
     event = stripe.webhooks.constructEvent(
-      request.body,
+      req.body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
