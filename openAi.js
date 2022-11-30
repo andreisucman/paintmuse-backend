@@ -1,3 +1,4 @@
+require("dotenv").config();
 const fs = require("fs");
 const Parse = require("parse/node");
 const { Configuration, OpenAIApi } = require("openai");
@@ -7,7 +8,6 @@ const { getLatestIndexEdit } = require("./helpers/getLatestIndexEdit");
 const { getLatestIndexVariate } = require("./helpers/getLatestIndexVariate");
 const { checkIfPrivate } = require("./helpers/checkIfPrivate");
 const request = require("request").defaults({ encoding: null });
-require("dotenv").config();
 
 async function requestImages({
   query,
@@ -42,7 +42,6 @@ async function requestImages({
       user: customerId,
     });
 
-    const request = require("request").defaults({ encoding: null });
     const latestIndex = await getLatestIndexTTI();
     const isPrivate = await checkIfPrivate(customerId);
 
@@ -86,19 +85,17 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  console.log({ prompt, count, original, mask, customerId });
-
   const openai = new OpenAIApi(configuration);
 
   try {
-    const response = await openai.createImageEdit({
-      image: request.get(original, async (body) => body),
-      mask: request.get(mask, async (body) => body),
+    const response = await openai.createImageEdit(
+      request.get(original, async (body) => body),
+      request.get(mask, async (body) => body),
       prompt,
-      n: count,
-      size: "1024x1024",
-      user: customerId,
-    });
+      count,
+      "1024x1024",
+      customerId,
+    );
 
     const latestIndex = await getLatestIndexEdit();
     const isPrivate = await checkIfPrivate(customerId);
