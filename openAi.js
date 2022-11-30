@@ -94,7 +94,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
       prompt,
       count,
       "1024x1024",
-      url,
+      "url",
       customerId
     );
 
@@ -148,9 +148,8 @@ async function requestVariation({ original, count, customerId }) {
       request.get(original, async (err, res, body) => body),
       count,
       "1024x1024",
-      url,
+      "url",
       customerId
-
     );
 
     const latestIndex = await getLatestIndexVariate();
