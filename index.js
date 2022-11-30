@@ -64,16 +64,6 @@ const api = new ParseServer({
   },
 });
 
-const corsOptions = {
-  origin: "*",
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Access-Control-Allow-Origin",
-    "Accept",
-  ],
-};
-
 const app = express();
 const httpServer = require("http").createServer(app);
 const mountPath = process.env.PARSE_MOUNT || "/parse";
@@ -109,7 +99,14 @@ app.use(mountPath, api);
 
 app.options("*", cors());
 
-app.use(cors());
+const corsOptions = {
+  origin: ["https://paintmuse.com", "https://www.paintmuse.com"],
+  methods: ["GET","POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.post("/requestImages", async (req, res) => {
   try {
