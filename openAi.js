@@ -142,12 +142,11 @@ async function requestVariation({ original, count, customerId }) {
   const openai = new OpenAIApi(configuration);
 
   try {
-    const response = await openai.createImageVariation({
-      image: request.get(original, async (err, res, body) => body),
-      n: count,
-      size: "1024x1024",
-      user: customerId,
-    });
+    const response = await openai.createImageVariation(
+      request.get(original, async (err, res, body) => body),
+      count,
+      "1024x1024"
+    );
 
     const latestIndex = await getLatestIndexVariate();
     const isPrivate = await checkIfPrivate(customerId);
