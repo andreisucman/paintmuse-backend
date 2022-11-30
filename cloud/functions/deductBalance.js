@@ -4,7 +4,7 @@ Parse.Cloud.define("deductBalance", async (req, res) => {
   const User = Parse.Object.extend(Parse.User);
   const query = new Parse.Query(User);
   query.equalTo("customerId", customerId);
-  const result = await query.first();
+  const result = await query.first({ useMasterKey: true });
 
   const currenPrepQuotaUsd = result.attributes.prepQuotaUsd;
   const currentPrepQuotaImg = result.attributes.prepQuotaImg;

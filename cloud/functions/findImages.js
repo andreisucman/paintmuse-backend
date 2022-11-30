@@ -31,7 +31,7 @@ Parse.Cloud.define("findImages", async (req) => {
           query.fullText("tags", String(words[i]));
           query.equalTo("style", style);
           query.equalTo("medium", medium);
-          result = await query.find();
+          result = await query.find({ useMasterKey: true });
 
           if (result.length > 0) {
             matching.push(...result);
@@ -42,7 +42,7 @@ Parse.Cloud.define("findImages", async (req) => {
         for (let i = wordsLength - 1; i >= 0; i--) {
           query.fullText("tags", String(words[i]));
           query.equalTo("style", style);
-          result = await query.find();
+          result = await query.find({ useMasterKey: true });
 
           if (result.length > 0) {
             matching.push(...result);
@@ -55,7 +55,7 @@ Parse.Cloud.define("findImages", async (req) => {
         for (let i = wordsLength - 1; i >= 0; i--) {
           query.fullText("tags", String(words[i]));
           query.equalTo("medium", medium);
-          result = await query.find();
+          result = await query.find({ useMasterKey: true });
 
           if (result.length > 0) {
             matching.push(...result);
@@ -65,7 +65,7 @@ Parse.Cloud.define("findImages", async (req) => {
       } else {
         for (let i = wordsLength - 1; i >= 0; i--) {
           query.fullText("tags", String(words[i]));
-          result = await query.find();
+          result = await query.find({ useMasterKey: true });
 
           if (result.length > 0) {
             matching.push(...result);
@@ -79,20 +79,20 @@ Parse.Cloud.define("findImages", async (req) => {
       if (medium && medium !== "Select medium") {
         query.equalTo("style", style);
         query.equalTo("medium", medium);
-        matching = await query.find();
+        matching = await query.find({ useMasterKey: true });
         matchingLength = matching.length;
       } else {
         query.equalTo("style", style);
-        matching = await query.find();
+        matching = await query.find({ useMasterKey: true });
         matchingLength = matching.length;
       }
     } else {
       if (medium && medium !== "Select medium") {
         query.equalTo("medium", medium);
-        matching = await query.find();
+        matching = await query.find({ useMasterKey: true });
         matchingLength = matching.length;
       } else {
-        matching = await query.find();
+        matching = await query.find({ useMasterKey: true });
         matchingLength = matching.length;
       }
     }

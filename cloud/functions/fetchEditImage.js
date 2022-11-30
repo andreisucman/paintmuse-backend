@@ -1,19 +1,18 @@
 Parse.Cloud.define("fetchEditImage", async (req) => {
-  const { customerId, limit, fields, page, fetchOnce } =
-    req.params;
+  const { customerId, limit, fields, page, fetchOnce } = req.params;
 
   const query = new Parse.Query("EditImage");
-  
+
   if (!customerId) return [];
-  
+
   query.equalTo("customerId", customerId);
   query.descending("createdAt");
-  
+
   if (fetchOnce) {
     const query = new Parse.Query("EditImage");
     query.descending("createdAt");
-    const queryResult = await query.first();
-    
+    const queryResult = await query.first({ useMasterKey: true });
+
     let index;
 
     if (queryResult) {
@@ -22,7 +21,7 @@ Parse.Cloud.define("fetchEditImage", async (req) => {
 
     const q = new Parse.Query("EditImage");
     q.equalTo("index", index);
-    const qResult = await q.find();
+    const qResult = await q.find({ useMasterKey: true });
 
     return qResult.map((image) => image.attributes);
   }
@@ -32,6 +31,6 @@ Parse.Cloud.define("fetchEditImage", async (req) => {
     query.skip(Number(limit * (page - 1)));
   }
   query.select(fields);
-  const result = await query.find();
+  const result = await query.find({ useMasterKey: true });
   return result.map((element) => element.attributes);
 });

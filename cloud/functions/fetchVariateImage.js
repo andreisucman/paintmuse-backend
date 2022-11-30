@@ -12,7 +12,7 @@ Parse.Cloud.define("fetchVariateImage", async (req) => {
   if (fetchOnce) {
     const query = new Parse.Query("VariateImage");
     query.descending("createdAt");
-    const queryResult = await query.first();
+    const queryResult = await query.first({ useMasterKey: true });
 
     let index;
 
@@ -22,7 +22,7 @@ Parse.Cloud.define("fetchVariateImage", async (req) => {
 
     const q = new Parse.Query("VariateImage");
     q.equalTo("index", index);
-    const qResult = await q.find();
+    const qResult = await q.find({ useMasterKey: true });
 
     return qResult.map((image) => image.attributes);
   }
@@ -35,7 +35,7 @@ Parse.Cloud.define("fetchVariateImage", async (req) => {
     query.skip(Number(limit * (page - 1)));
   }
   query.select(fields);
-  const result = await query.find();
+  const result = await query.find({ useMasterKey: true });
   
   return result.map((element) => element.attributes);
 });

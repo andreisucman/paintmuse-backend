@@ -25,7 +25,7 @@ async function webhookHandler(event) {
     const User = Parse.Object.extend(Parse.User);
     const query = new Parse.Query(User);
     query.equalTo("stripeCustId", object.customer);
-    const result = await query.first();
+    const result = await query.first({ useMasterKey: true });
 
     if (object.cancel_at_period_end) {
       result.set("cancelledPlan", result.attributes.customerPlan);
