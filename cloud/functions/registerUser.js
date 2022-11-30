@@ -34,12 +34,16 @@ Parse.Cloud.define("register", async (req) => {
     }
     if (!usageAccepted) {
       return {
-        code: 5,
+        code: 6,
         message: "You must agree with the terms of usage to register.",
       };
     }
+
+    console.log("Reached here 42")
     await user.signUp();
+    
     return { code: 0, user };
+
   } catch (err) {
     if (err.code === 202 || err.code === 203) {
       return { code: 2, message: "An account already exists for this email." };
