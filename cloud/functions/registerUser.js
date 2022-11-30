@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 
 Parse.Cloud.define("register", async (req) => {
-  const { name, email, passwordOne, passwordTwo, termsAccepted } = req.params;
+  const { name, email, passwordOne, passwordTwo, termsAccepted, usageAccepted } = req.params;
 
   if (passwordOne !== passwordTwo) {
     return {
@@ -30,6 +30,12 @@ Parse.Cloud.define("register", async (req) => {
       return {
         code: 1,
         message: "You must agree with the terms of service to register.",
+      };
+    }
+    if (!usageAccepted) {
+      return {
+        code: 5,
+        message: "You must agree with the terms of usage to register.",
       };
     }
     await user.signUp();
