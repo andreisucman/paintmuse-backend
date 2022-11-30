@@ -86,6 +86,8 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
     apiKey: process.env.OPENAI_API_KEY,
   });
 
+  console.log({ prompt, count, original, mask, customerId });
+
   const openai = new OpenAIApi(configuration);
 
   try {
