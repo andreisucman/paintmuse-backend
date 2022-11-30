@@ -32,9 +32,11 @@ async function webhookHandler(event) {
       result.set("customerPlan", 0);
       await result.save(null, { useMasterKey: true });
     } else {
-      result.set("customerPlan", result.attributes.cancelledPlan);
-      result.set("cancelledPlan", 0);
-      await result.save(null, { useMasterKey: true });
+      if (result.attributes.cancelledPlan) {
+        result.set("customerPlan", result.attributes.cancelledPlan);
+        result.set("cancelledPlan", 0);
+        await result.save(null, { useMasterKey: true });
+      }
     }
   }
 }
