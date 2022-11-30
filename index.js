@@ -5,6 +5,7 @@ const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
 const bodyParser = require("body-parser");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const { getStripe } = require("./helpers/loadStripe");
 
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 const { webhookHandler } = require("./webhooks");
@@ -84,7 +85,6 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-
   } catch (err) {
     console.log(`⚠️  Webhook signature verification failed.`, err.message);
     return res.sendStatus(400);
@@ -101,9 +101,9 @@ app.options("*", cors());
 
 const corsOptions = {
   origin: ["https://paintmuse.com", "https://www.paintmuse.com"],
-  methods: ["GET","POST"],
+  methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -169,6 +169,8 @@ app.post("/checkout_sessions", async (req, res) => {
         customer_email: req.body.email,
       });
 
+      const stripe = await getStripe();
+      await stripe.redirectToCheckout({ sessionId: session.id });
       res.status(200).json(session);
     } catch (err) {
       res.status(500).json({ statusCode: 500, message: err.message });
