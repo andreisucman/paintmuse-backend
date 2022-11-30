@@ -40,7 +40,7 @@ Parse.Cloud.define("register", async (req) => {
     }
 
     console.log("Reached here 42")
-    await user.signUp({ useMasterKey: true });
+    await user.signUp(null, { useMasterKey: true });
     
     return { code: 0, user };
 
