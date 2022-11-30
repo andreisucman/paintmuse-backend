@@ -72,7 +72,7 @@ async function updateQuota({ mode, amount, email, customer }) {
       }
       const currentSubQuota = result.attributes.subQuotaImg;
       const newExpirationDate = new Date(
-        (currentExpirationDate / 1000 + 28927183) * 1000
+        (currentExpirationDate / 1000 + 31556926) * 1000
       );
       result.set("renewsOn", newExpirationDate);
       result.set("customerPlan", 2);
