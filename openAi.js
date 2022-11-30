@@ -93,7 +93,9 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
       request.get(mask, async (body) => body),
       prompt,
       count,
-      "1024x1024"
+      "1024x1024",
+      url,
+      customerId
     );
 
     const latestIndex = await getLatestIndexEdit();
@@ -145,7 +147,10 @@ async function requestVariation({ original, count, customerId }) {
     const response = await openai.createImageVariation(
       request.get(original, async (err, res, body) => body),
       count,
-      "1024x1024"
+      "1024x1024",
+      url,
+      customerId
+
     );
 
     const latestIndex = await getLatestIndexVariate();
