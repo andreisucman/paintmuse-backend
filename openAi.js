@@ -93,8 +93,7 @@ async function requestEdit({ prompt, count, original, mask, customerId }) {
       request.get(mask, async (body) => body),
       prompt,
       count,
-      "1024x1024",
-      customerId,
+      "1024x1024"
     );
 
     const latestIndex = await getLatestIndexEdit();
