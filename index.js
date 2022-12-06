@@ -5,7 +5,6 @@ const ParseServer = require("parse-server").ParseServer;
 const S3Adapter = require("@parse/s3-files-adapter");
 const bodyParser = require("body-parser");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const { getStripe } = require("./helpers/loadStripe");
 
 const { requestImages, requestEdit, requestVariation } = require("./openAi.js");
 const { webhookHandler } = require("./webhooks");
