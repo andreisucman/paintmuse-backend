@@ -99,7 +99,7 @@ app.use(mountPath, api);
 app.options("*", cors());
 
 const corsOptions = {
-  origin: ["https://paintmuse.com", "https://www.paintmuse.com"],
+  origin: ["https://paintmuse.com", "https://www.paintmuse.com", "*"],
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 200,
