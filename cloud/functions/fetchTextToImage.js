@@ -14,7 +14,13 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
   if (fetchOnce) {
     const query = new Parse.Query("TextToImage");
     query.descending("createdAt");
-    query.equalTo("isPrivate", false);
+
+    if (!customerId) {
+      query.equalTo("isPrivate", false);
+    } else {
+      query.equalTo("customerId", customerId);
+    }
+
     const queryResult = await query.first({ useMasterKey: true });
     
     let index;
