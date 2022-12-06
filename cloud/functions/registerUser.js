@@ -1,7 +1,15 @@
 const { v4: uuidv4 } = require("uuid");
 
 Parse.Cloud.define("register", async (req) => {
-  const { name, email, passwordOne, passwordTwo, termsAccepted, usageAccepted } = req.params;
+  const {
+    name,
+    email,
+    passwordOne,
+    passwordTwo,
+    promoCode,
+    termsAccepted,
+    usageAccepted,
+  } = req.params;
 
   if (passwordOne !== passwordTwo) {
     return {
@@ -16,6 +24,34 @@ Parse.Cloud.define("register", async (req) => {
     nameOfTheUser = "Stranger";
   }
 
+  let applyBonus = false;
+
+  if (promoCode) {
+    const promoQuery = new Parse.Query("Promos");
+    promoQuery.equalTo("code", promoCode);
+    const res = await promoQuery.first();
+
+    if (!res) {
+      return {
+        code: 7,
+        message: "Promo code expired or is invalid",
+      };
+    }
+
+    const used = res.attributes.used;
+
+    if (used) {
+      return {
+        code: 8,
+        message: "This promo has already been used",
+      };
+    } else {
+      res.set("used", true);
+      await res.save(null, {useMasterKey: true});
+      applyBonus = true;
+    }
+  }
+
   const user = new Parse.User();
   user.set("username", email);
   user.set("name", nameOfTheUser);
@@ -24,6 +60,10 @@ Parse.Cloud.define("register", async (req) => {
   user.set("passwordLength", passwordOne.length);
   user.set("customerId", uuidv4());
   user.set("customerPlan", 0);
+
+  if (applyBonus) {
+    user.set("prepQuotaImg", 40);
+  }
 
   try {
     if (!termsAccepted) {
@@ -39,11 +79,9 @@ Parse.Cloud.define("register", async (req) => {
       };
     }
 
-    console.log("Reached here 42")
     await user.signUp(null, { useMasterKey: true });
-    
-    return { code: 0, user };
 
+    return { code: 0, user };
   } catch (err) {
     if (err.code === 202 || err.code === 203) {
       return { code: 2, message: "An account already exists for this email." };
