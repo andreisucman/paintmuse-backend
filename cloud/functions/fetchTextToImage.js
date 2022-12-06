@@ -1,46 +1,55 @@
 Parse.Cloud.define("fetchTextToImage", async (req) => {
-  const { customerId, limit, fields, page, fetchOnce } =
-    req.params;
-
-  const query = new Parse.Query("TextToImage");
+  const { customerId, limit, fields, page, fetchOnce } = req.params;
 
   if (customerId) {
-    query.equalTo("customerId", customerId);
-  }
+    const public = new Parse.Query("TextToImage");
+    public.equalTo("isPrivate", false);
 
-  query.equalTo("isPrivate", false);
-  query.descending("createdAt");
+    const owner = new Parse.Query("TextToImage");
+    owner.equalTo("customerId", customerId);
+    owner.equalTo("isPrivate", true);
 
-  if (fetchOnce) {
+    if (fetchOnce) {
+      let index;
+      const q = new Parse.Query.or(public, owner);
+      q.descending("createdAt");
+      const r = await q.first();
+
+      if (r) {
+        index = q.attributes.index;
+      }
+
+      const newQ = Parse.Query.or(public, owner);
+      newQ.equalTo("index", index);
+      newQ.select(fields);
+
+      const qResult = await newQ.find({ useMasterKey: true });
+      return qResult.map((image) => image.attributes);
+    } else {
+      const q = new Parse.Query.or(public, owner);
+      q.descending("createdAt");
+      q.select(fields);
+
+      if (page) {
+        q.limit(limit);
+        q.skip(Number(limit * (page - 1)));
+      }
+
+      const result = await q.find({ useMasterKey: true });
+      return result.map((element) => element.attributes);
+    }
+  } else {
     const query = new Parse.Query("TextToImage");
+    query.equalTo("isPrivate", false);
     query.descending("createdAt");
 
-    if (!customerId) {
-      query.equalTo("isPrivate", false);
-    } else {
-      query.equalTo("customerId", customerId);
+    if (page) {
+      query.limit(limit);
+      query.skip(Number(limit * (page - 1)));
     }
 
-    const queryResult = await query.first({ useMasterKey: true });
-    
-    let index;
-
-    if (queryResult) {
-      index = queryResult.attributes.index;
-    }
-
-    const q = new Parse.Query("TextToImage");
-    q.equalTo("index", index);
-    const qResult = await q.find({ useMasterKey: true });
-
-    return qResult.map((image) => image.attributes);
+    query.select(fields);
+    const result = await query.find({ useMasterKey: true });
+    return result.map((element) => element.attributes);
   }
-
-  if (page) {
-    query.limit(limit);
-    query.skip(Number(limit * (page - 1)));
-  }
-  query.select(fields);
-  const result = await query.find({ useMasterKey: true });
-  return result.map((element) => element.attributes);
 });
