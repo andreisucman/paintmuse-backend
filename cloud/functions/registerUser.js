@@ -63,6 +63,7 @@ Parse.Cloud.define("register", async (req) => {
 
   if (applyBonus) {
     user.set("prepQuotaImg", 40);
+    user.set("prepQuotaUsd", 10);
   }
 
   try {
