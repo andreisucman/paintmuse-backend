@@ -43,6 +43,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
       let index;
       const q = new Parse.Query("TextToImage");
       q.descending("createdAt");
+      query.equalTo("isPrivate", false);
       const r = await q.first();
 
       if (r) {
