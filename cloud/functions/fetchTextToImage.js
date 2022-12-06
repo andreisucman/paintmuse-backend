@@ -11,7 +11,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
 
     if (fetchOnce) {
       let index;
-      const q = new Parse.Query.or(public, owner);
+      const q = Parse.Query.or(public, owner);
       q.descending("createdAt");
       const r = await q.first();
 
@@ -26,7 +26,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
       const qResult = await newQ.find({ useMasterKey: true });
       return qResult.map((image) => image.attributes);
     } else {
-      const q = new Parse.Query.or(public, owner);
+      const q = Parse.Query.or(public, owner);
       q.descending("createdAt");
       q.select(fields);
 
