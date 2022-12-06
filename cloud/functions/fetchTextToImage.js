@@ -16,7 +16,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
       const r = await q.first();
 
       if (r) {
-        index = q.attributes.index;
+        index = r.attributes.index;
       }
 
       const newQ = Parse.Query.or(public, owner);
