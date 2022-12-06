@@ -39,17 +39,35 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
       return result.map((element) => element.attributes);
     }
   } else {
-    const query = new Parse.Query("TextToImage");
-    query.equalTo("isPrivate", false);
-    query.descending("createdAt");
+    if (fetchOnce) {
+      let index;
+      const q = Parse.Query.or(public, owner);
+      q.descending("createdAt");
+      const r = await q.first();
 
-    if (page) {
-      query.limit(limit);
-      query.skip(Number(limit * (page - 1)));
+      if (r) {
+        index = r.attributes.index;
+      }
+
+      const newQ = Parse.Query.or(public, owner);
+      newQ.equalTo("index", index);
+      newQ.select(fields);
+
+      const qResult = await newQ.find({ useMasterKey: true });
+      return qResult.map((image) => image.attributes);
+    } else {
+      const query = new Parse.Query("TextToImage");
+      query.equalTo("isPrivate", false);
+      query.descending("createdAt");
+
+      if (page) {
+        query.limit(limit);
+        query.skip(Number(limit * (page - 1)));
+      }
+
+      query.select(fields);
+      const result = await query.find({ useMasterKey: true });
+      return result.map((element) => element.attributes);
     }
-
-    query.select(fields);
-    const result = await query.find({ useMasterKey: true });
-    return result.map((element) => element.attributes);
   }
 });
