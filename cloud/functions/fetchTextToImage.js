@@ -41,7 +41,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
   } else {
     if (fetchOnce) {
       let index;
-      const q = Parse.Query.or(public, owner);
+      const q = Parse.Query("TextToImage");
       q.descending("createdAt");
       const r = await q.first();
 
@@ -49,7 +49,7 @@ Parse.Cloud.define("fetchTextToImage", async (req) => {
         index = r.attributes.index;
       }
 
-      const newQ = Parse.Query.or(public, owner);
+      const newQ = Parse.Query("TextToImage");;
       newQ.equalTo("index", index);
       newQ.select(fields);
 
